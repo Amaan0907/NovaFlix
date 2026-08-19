@@ -16,6 +16,7 @@ func main() {
 		c.String(http.StatusOK,"Hello, NovaFlix")
 	})
 	router.GET("/movies",controller.GetMovies())
+	router.GET("/movie/:imdb_id",controller.GetMovie())
 	
 	if err:=router.Run(":3000");err!=nil{
 		fmt.Println("Failed to start server",err)
