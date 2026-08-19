@@ -13,16 +13,16 @@ type Genre struct {
 
 type Ranking struct{
 	RankingValue int `bson:"ranking_value" json:"ranking_value" validate:"required"`
-	RankingName string `bson:"ranking_name" json:"ranking_name" validate:"oneof=Excellent Good Okay Bad Terrible"`
+	RankingName string `bson:"ranking_name" json:"ranking_name" validate:"required"`
 
 }
 
 
 type Movie struct{
 	ID bson.ObjectID  `bson:"_id" json:"_id" `
-	Title string	`bson:"imdb_id" json:"imbd_id" validate:"required"`
-	ImdbId string	`bson:"title" json:"title" validate:"required, min=2,max=500"`
-	PosterPath string `bson:"poster_path" json:"poster_path" validate:"required , url"`
+	Title string	`bson:"title" json:"title" validate:"required"`
+	ImdbId string	`bson:"imdb_id" json:"imdb_id" validate:"required,min=2,max=500"`
+	PosterPath string `bson:"poster_path" json:"poster_path" validate:"required,url"`
 	YouTubeId string 	`bson:"youtube_id" json:"youtube_id" validate:"required"`
 	Genre []Genre	`bson:"genre" json:"genre" validate:"required,dive"`
 	//dive make sure nested array is also validated
