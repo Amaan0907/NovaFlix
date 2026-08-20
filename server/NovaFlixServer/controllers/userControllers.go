@@ -7,6 +7,7 @@ import (
 
 	"github.com/Amaan0907/NovaFlix/server/NovaFlixServer/database"
 	"github.com/Amaan0907/NovaFlix/server/NovaFlixServer/models"
+	"github.com/Amaan0907/NovaFlix/server/NovaFlixServer/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -107,5 +108,26 @@ func LoginUser() gin.HandlerFunc{
 			return 
 		}
 		
+		token,refreshToken,err:=utils.GenerateAllTokens(foundUser.FirstName,foundUser.LastName,foundUser.UserID,foundUser.Email,foundUser.Role)
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to generate Tokens"})
+			return 
+		}
+		err=utils.UpdateAllTokens(foundUser.UserID,token,refreshToken)
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to update User"})
+			return 
+		}
+		c.JSON(http.StatusOK,models.UserResponse{
+			FirstName: foundUser.FirstName,
+			LastName: foundUser.LastName,
+			UserId: foundUser.UserID,
+			Email: foundUser.Email,
+			Role: foundUser.Role,
+			Token: token,
+			RefreshToken: refreshToken,
+			FavouriteGenres: foundUser.FavouriteGenres,
+		})
+
 	}
 }
