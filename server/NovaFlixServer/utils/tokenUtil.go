@@ -2,11 +2,13 @@ package utils
 
 import (
 	"context"
+	"errors"
 
 	"os"
 	"time"
 
 	"github.com/Amaan0907/NovaFlix/server/NovaFlixServer/database"
+	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -55,7 +57,7 @@ func GenerateAllTokens(email, firstName, lastName, role, userId string) (string,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "NovaFlix",
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 *7* time.Hour)),
 		},
 	}
 
@@ -88,4 +90,36 @@ func UpdateAllTokens(userId, token, refreshToken string) (err error) {
 	}
 
 	return nil
+}
+
+
+func GetAccessToken(c *gin.Context)(string,error){
+	authHeader:=c.Request.Header.Get("Authorization")
+	if authHeader==""{
+		return "",errors.New("Authorization header is required")
+	}
+	tokenString:=authHeader[len("Bearer "):]
+
+	if tokenString==""{
+		return "",errors.New("Bearer token is required")
+	}
+	return tokenString,nil
+
+}
+func ValidateToken(tokenString string)(*SignedDetails ,error){
+	claims:=&SignedDetails{}
+
+	token,err:=jwt.ParseWithClaims(tokenString,claims,func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_KEY),nil
+	})
+	if err!=nil{
+		return nil,err
+	}
+	if _,ok:=token.Method.(*jwt.SigningMethodHMAC);!ok{
+		return nil,err
+	}
+	if claims.ExpiresAt.Time.Before(time.Now()){
+		return nil,errors.New("Token has expired")
+	}
+	return claims,nil
 }
