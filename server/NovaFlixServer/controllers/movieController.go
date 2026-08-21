@@ -103,8 +103,17 @@ func AddMovie() gin.HandlerFunc{
 }
 
 
-func AdminReview() gin.HandlerFunc{
+func AdminReviewUpdate() gin.HandlerFunc{
 	return  func(c *gin.Context) {
+		role,err:=utils.GetUserRoleFromContext(c)
+		if err!=nil{
+			c.JSON(http.StatusBadRequest,gin.H{"error":"Role not found in context"})
+			return
+		}
+		if role!="ADMIN"{
+			c.JSON(http.StatusUnauthorized,gin.H{"error":"You are not authorized for this functionality"})
+			return
+		}
 		movieId:=c.Param("imdb_id")
 		if movieId==""{
 			c.JSON(http.StatusBadRequest,gin.H{"error":"Movie Id Required"})
@@ -126,6 +135,7 @@ func AdminReview() gin.HandlerFunc{
 		sentiment,rankVal,err:=GetReviewRanking(req.AdminReview)
 
 		if err!=nil{
+			log.Println("GetReviewRanking error:", err)
 			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error getting review ranking"})
 			return
 		}
@@ -188,7 +198,7 @@ func GetReviewRanking(admin_review string)(string,int,error){
 		return "",0,errors.New("Could not read GEMINI_API_KEY")
 	}
 
-	llm,err:= googleai.New(context.Background(),googleai.WithAPIKey(GeminiKey))
+	llm,err:= googleai.New(context.Background(),googleai.WithAPIKey(GeminiKey), googleai.WithDefaultModel("gemini-3.6-flash"))
 
 	if err!=nil{
 		return "",0,err
