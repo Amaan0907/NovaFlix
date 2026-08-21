@@ -108,7 +108,7 @@ func LoginUser() gin.HandlerFunc{
 			return 
 		}
 		
-		token,refreshToken,err:=utils.GenerateAllTokens(foundUser.FirstName,foundUser.LastName,foundUser.UserID,foundUser.Email,foundUser.Role)
+		token,refreshToken,err:=utils.GenerateAllTokens(foundUser.Email,foundUser.FirstName,foundUser.LastName,foundUser.Role,foundUser.UserID)
 		if err!=nil{
 			c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to generate Tokens"})
 			return 
