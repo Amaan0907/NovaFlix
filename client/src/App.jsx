@@ -2,6 +2,8 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './header/Header'
 import Home from './components/home/Home'
+import Login from './components/login/Login'
+import Register from './components/register/Register'
 
 
 const App = () => {
@@ -11,9 +13,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/movies" element={<Home/>} />
-        {/* <Route path="/tv-shows" element={<ComingSoon title="TV Shows" />} />
-        <Route path="/my-list" element={<ComingSoon title="My List" />} />
-        <Route path="/login" element={<ComingSoon title="Sign In" />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path='/registeruser' element={<Register/>}/>
       </Routes>
     </div>
   )

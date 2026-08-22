@@ -5,11 +5,12 @@ import Button from '../components/Button'
 const Header = () => {
 
     const navigate = useNavigate()
-
+    
   return (
     <header>
         <Navbar>
             <Button onClick={() => navigate('/login')}>Sign In</Button>
+            <Button onClick={() => navigate('/registeruser')}>Sign Up</Button>
         </Navbar>
     </header>
   )
